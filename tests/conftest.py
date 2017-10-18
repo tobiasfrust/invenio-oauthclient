@@ -90,6 +90,7 @@ def base_app(request):
         SECURITY_DEPRECATED_PASSWORD_SCHEMES=[],
         SECURITY_PASSWORD_HASH='plaintext',
         SECURITY_PASSWORD_SCHEMES=['plaintext'],
+        SQLALCHEMY_TRACK_MODIFICATIONS=True,
     )
     FlaskMenu(base_app)
     Babel(base_app)

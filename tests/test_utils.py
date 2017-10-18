@@ -138,6 +138,10 @@ def test_csrf_disabled_form_old(userprofiles_withcsrf_app, user_dict):
             user_dict,
         )
 
+        print(form.data)
+        if hasattr(form.profile, 'csrf_token'):
+            print(form.profile.csrf_token)
+
         assert form.validate()
         check_csrf_disabled(form)
 
@@ -152,6 +156,10 @@ def test_csrf_disabled_form_updated(userprofiles_withcsrf_app, user_dict):
             form,
             user_dict,
         )
+
+        print(form.data)
+        if hasattr(form.profile, 'csrf_token'):
+            print(form.profile.csrf_token)
 
         assert form.validate()
         check_csrf_disabled(form)
