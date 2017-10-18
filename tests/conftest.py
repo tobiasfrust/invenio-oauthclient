@@ -139,6 +139,18 @@ def userprofiles_app(app):
 
 
 @pytest.fixture
+def userprofiles_withcsrf_app(app):
+    """Configure userprofiles module."""
+    app.config.update(
+        USERPROFILES_EXTEND_SECURITY_FORMS=True,
+        WTF_CSRF_ENABLED=True,
+    )
+    InvenioUserProfiles(app)
+    app.register_blueprint(blueprint_ui_init)
+    return app
+
+
+@pytest.fixture
 def models_fixture(app):
     """Flask app with example data used to test models."""
     with app.app_context():
@@ -352,3 +364,15 @@ def user(userprofiles_app):
         db.session.add(profile)
     db.session.commit()
     return user1
+
+
+@pytest.fixture
+def user_dict():
+    """Return dictionary with basic user information."""
+    return dict(
+            email='test@tester.de',
+            profile=dict(
+                full_name='Test Tester',
+                username='test123',
+            ),
+        )

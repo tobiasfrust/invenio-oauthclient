@@ -30,13 +30,15 @@ import sys
 
 import pytest
 from flask_security.confirmable import _security
+from helpers import check_csrf_disabled
 from invenio_db import db
 
 from invenio_oauthclient.errors import AlreadyLinkedError
 from invenio_oauthclient.models import RemoteAccount, RemoteToken
-from invenio_oauthclient.utils import _get_external_id, oauth_authenticate, \
-    oauth_get_user, oauth_link_external_id, oauth_unlink_external_id, \
-    obj_or_import_string, rebuild_access_tokens
+from invenio_oauthclient.utils import _get_external_id, \
+    create_csrf_disabled_registrationform, create_csrf_free_registrationform, \
+    fill_form, oauth_authenticate, oauth_get_user, oauth_link_external_id, \
+    oauth_unlink_external_id, obj_or_import_string, rebuild_access_tokens
 
 
 def test_utilities(models_fixture):
@@ -123,3 +125,33 @@ def test_rebuilding_access_tokens(models_fixture):
 
     # Asserting the access_token is not changed after rebuilding
     assert remote_token.access_token == test_token
+
+
+def test_csrf_disabled_form_old(userprofiles_withcsrf_app, user_dict):
+    """Test disabling CSRF in registration form."""
+    app = userprofiles_withcsrf_app
+    with app.test_request_context():
+        form = create_csrf_disabled_registrationform()
+
+        form = fill_form(
+            form,
+            user_dict,
+        )
+
+        assert form.validate()
+        check_csrf_disabled(form)
+
+
+def test_csrf_disabled_form_updated(userprofiles_withcsrf_app, user_dict):
+    """Test disabling CSRF in registration form with updated function."""
+    app = userprofiles_withcsrf_app
+    with app.test_request_context():
+        form = create_csrf_free_registrationform()
+
+        form = fill_form(
+            form,
+            user_dict,
+        )
+
+        assert form.validate()
+        check_csrf_disabled(form)
